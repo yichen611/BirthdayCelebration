@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday! 🎂</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a0533;
+    font-family: 'Quicksand', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    cursor: default;
+  }
+
+  /* ── STARFIELD ── */
+  #stars {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: #fff;
+    animation: twinkle var(--d) infinite alternate;
+    opacity: 0.6;
+  }
+  @keyframes twinkle { to { opacity: 0.1; transform: scale(0.5); } }
+
+  /* ── SCREEN WRAPPER ── */
+  #scene {
+    position: relative; z-index: 1;
+    width: 100vw; height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+
+  /* ── HAPPY BIRTHDAY TITLE ── */
+  #title {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    color: #FFD700;
+    text-shadow: 0 0 20px #FF6B9D, 0 0 40px #FF6B9D88;
+    margin-bottom: 1rem;
+    animation: floatTitle 3s ease-in-out infinite;
+    letter-spacing: 2px;
+  }
+  @keyframes floatTitle {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  /* ── MAIN STAGE ── */
+  #stage {
+    display: flex; align-items: center; gap: 24px;
+    position: relative;
+  }
+
+  /* ── CAKE SVG ── */
+  #cake-wrap {
+    position: relative;
+    cursor: default;
+    transition: transform 0.3s;
+  }
+  #cake-wrap.cutting { cursor: crosshair; }
+  #cake-svg { display: block; }
+
+  /* Candle flames */
+  .flame {
+    animation: flicker 0.4s infinite alternate;
+    transform-origin: center bottom;
+  }
+  @keyframes flicker {
+    0% { transform: scaleX(1) scaleY(1); opacity:1; }
+    100% { transform: scaleX(0.85) scaleY(1.15) rotate(3deg); opacity:0.85; }
+  }
+
+  /* ── CAT ── */
+  #cat-wrap {
+    display: flex; flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s;
+  }
+  #cat-svg { display: block; }
+  #cat-wrap.bouncing {
+    animation: catBounce 0.5s ease-in-out infinite alternate;
+  }
+  @keyframes catBounce {
+    0% { transform: translateY(0) scaleY(1); }
+    100% { transform: translateY(-40px) scaleY(0.95); }
+  }
+
+  /* ── WISH BOX ── */
+  #wish-box {
+    margin-top: 18px;
+    text-align: center;
+  }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+  #wish-btn {
+    background: linear-gradient(135deg, #FF6B9D, #FFB347);
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 10px 28px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px #FF6B9D88;
+  }
+  #wish-btn:hover { transform: scale(1.06); box-shadow: 0 6px 28px #FF6B9DBB; }
+
+  /* ── STATUS TEXT ── */
+  #status-text {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.1rem, 3vw, 2rem);
+    color: #FFD7FF;
+    margin-top: 18px;
+    text-shadow: 0 0 12px #FF6B9D;
+    text-align: center;
+    min-height: 2.4rem;
+    transition: opacity 0.5s;
+  }
+
+  /* ── CUT BUTTON ── */
+  #cut-btn {
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 14px 36px;
+    cursor: pointer;
+    margin-top: 18px;
+    box-shadow: 0 4px 24px #a855f788;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: none;
+    letter-spacing: 1px;
+  }
+  #cut-btn:hover { transform: scale(1.07); box-shadow: 0 6px 32px #a855f7BB; }
+
+  /* ── FIREWORKS ── */
+  #fireworks-canvas {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── SLICES ── */
+  #slices-container {
+    position: fixed;
+    bottom: 80px; right: 40px;
+    display: flex; flex-direction: column-reverse; gap: 10px;
+    z-index: 10;
+    pointer-events: none;
+  }
+  .slice-pop {
+    animation: slicePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    opacity: 0;
+    transform: scale(0) rotate(-20deg);
+  }
+  @keyframes slicePop {
+    0% { opacity:0; transform: scale(0) rotate(-20deg) translateY(30px); }
+    70% { opacity:1; transform: scale(1.1) rotate(5deg) translateY(-5px); }
+    100% { opacity:1; transform: scale(1) rotate(0deg) translateY(0); }
+  }
+
+  /* ── GIRL CHARACTER ── */
+  #girl-wrap {
+    position: fixed;
+    bottom: 0;
+    left: -160px;
+    z-index: 9;
+    transition: left 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  #girl-wrap.enter { left: 60px; }
+  #girl-walk-anim { animation: girlWalk 0.4s infinite alternate; }
+  @keyframes girlWalk {
+    0% { transform: skewX(-2deg) translateY(0); }
+    100% { transform: skewX(2deg) translateY(-4px); }
+  }
+  #girl-wrap.eating #girl-walk-anim { animation: girlEat 0.6s infinite alternate; }
+  @keyframes girlEat {
+    0% { transform: rotate(-5deg); }
+    100% { transform: rotate(5deg) translateY(-3px); }
+  }
+
+  /* ── ENVELOPE BUTTON ── */
+  #envelope-btn {
+    position: absolute;
+    top: -64px; left: 50%;
+    transform: translateX(-50%);
+    background: #fff9ec;
+    border: 2px solid #FFD700;
+    border-radius: 12px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    color: #7c3aed;
+    font-weight: 700;
+    font-family: 'Quicksand', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    display: none;
+    animation: fadeIn 0.5s ease;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  #envelope-btn:hover { transform: translateX(-50%) scale(1.08); box-shadow: 0 6px 22px rgba(0,0,0,0.3); }
+  #envelope-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 10px solid #FFD700;
+  }
+
+  /* ── LETTER MODAL OVERLAY ── */
+  #letter-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(20, 5, 40, 0.75);
+    z-index: 50;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  #letter-overlay.open { display: flex; animation: fadeIn 0.4s ease; }
+
+  #letter-card {
+    background: #fffdf4;
+    border-radius: 20px;
+    padding: 44px 48px 40px;
+    max-width: 420px;
+    width: 90vw;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    animation: letterPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes letterPop {
+    0% { transform: scale(0.6) rotate(-4deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  /* Decorative top fold line */
+  #letter-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 8px;
+    background: repeating-linear-gradient(90deg, #FF6B9D 0px, #FF6B9D 16px, #FFD700 16px, #FFD700 32px, #a855f7 32px, #a855f7 48px);
+    border-radius: 20px 20px 0 0;
+  }
+
+  #letter-countdown {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #c4a0e0;
+    font-family: 'Quicksand', sans-serif;
+  }
+
+  #letter-body {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.05rem;
+    line-height: 2;
+    color: #3b1c5a;
+    white-space: pre-wrap;
+    text-align: left;
+  }
+
+  #letter-sig {
+    margin-top: 20px;
+    font-family: 'Pacifico', cursive;
+    font-size: 1rem;
+    color: #FF6B9D;
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* ── CONFETTI ── */
+  .confetti-piece {
+    position: fixed;
+    width: 10px; height: 10px;
+    pointer-events: none;
+    z-index: 200;
+    animation: confettiFall var(--dur) ease-in forwards;
+    border-radius: var(--r);
+  }
+  @keyframes confettiFall {
+    0%   { transform: translate(0,0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)); opacity: 0; }
+  }
+
+  /* ── CAT SPEECH BUBBLE ── */
+  #cat-bubble {
+    position: absolute;
+    top: -56px; left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border-radius: 14px;
+    padding: 9px 14px;
+    font-size: 0.82rem;
+    color: #6b21a8;
+    font-weight: 700;
+    font-family: 'Quicksand', sans-serif;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  #cat-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -9px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid #fff;
+  }
+
+  /* Fade helper */
+  .hidden { display: none !important; }
+  .fade-out { animation: fadeOut 0.5s ease forwards; }
+  @keyframes fadeOut { to { opacity:0; } }
+
+  /* ── LETTER COUNTDOWN ── */
+  #letter-countdown {
+    display: none;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #c4a0e0;
+    font-family: 'Quicksand', sans-serif;
+  }
+
+  /* ── BALLOON GAME SCREEN ── */
+  #balloon-screen {
+    display: none;
+    position: fixed; inset: 0;
+    background: #1a0533;
+    z-index: 20;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+  }
+  #balloon-title {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.2rem, 4vw, 2.2rem);
+    color: #FFD700;
+    text-shadow: 0 0 16px #FF6B9D;
+    margin-top: 28px;
+    z-index: 2;
+    text-align: center;
+    animation: floatTitle 3s ease-in-out infinite;
+  }
+  #char-row {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 16px;
+    z-index: 2;
+  }
+  .char-slot {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 2px dashed rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    color: rgba(255,255,255,0.15);
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    transition: color 0.4s, text-shadow 0.4s, border-color 0.4s;
+  }
+  .char-slot.slot-reveal {
+    border-color: currentColor;
+    animation: slotPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  @keyframes slotPop {
+    0% { transform: scale(0.5); }
+    70% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  .balloon {
+    position: absolute;
+    bottom: -180px;
+    display: flex; flex-direction: column; align-items: center;
+    animation: floatUp var(--dur, 9s) linear forwards;
+    cursor: pointer;
+    user-select: none;
+    z-index: 3;
+  }
+  @keyframes floatUp {
+    0% { bottom: -180px; opacity: 1; }
+    85% { opacity: 1; }
+    100% { bottom: 110%; opacity: 0; }
+  }
+  .balloon-inner {
+    width: 64px; height: 78px;
+    border-radius: 50% 50% 50% 50% / 55% 55% 45% 45%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.7rem;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Quicksand', sans-serif;
+    box-shadow: inset -6px -8px 0 rgba(0,0,0,0.12);
+    transition: transform 0.1s;
+  }
+  .balloon:hover .balloon-inner { transform: scale(1.1); }
+  .balloon-knot {
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 10px solid var(--color);
+    margin-top: -1px;
+  }
+  .balloon-string {
+    width: 1px; height: 50px;
+    background: rgba(255,255,255,0.4);
+  }
+  .balloon-burst {
+    position: fixed;
+    width: 80px; height: 80px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 5;
+    animation: burst 0.5s ease-out forwards;
+    background: radial-gradient(circle, var(--color) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  @keyframes burst {
+    0% { transform: translate(-50%,-50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%,-50%) scale(3); opacity: 0; }
+  }
+  #balloon-done {
+    position: absolute;
+    bottom: 60px;
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.4rem, 5vw, 2.8rem);
+    color: #FFD700;
+    text-shadow: 0 0 20px #FF6B9D, 0 0 40px #FF6B9D88;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1s ease;
+    z-index: 4;
+    padding: 0 20px;
+  }
+  /* ── HOUSE SCREEN ── */
+  #house-screen {
+    position: fixed; inset: 0; z-index: 100;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-end;
+    overflow: hidden;
+    background: linear-gradient(180deg, #0d0122 0%, #1a0533 40%, #2d1060 100%);
+    transition: opacity 0.8s ease;
+  }
+  #house-screen.fade-away {
+    opacity: 0; pointer-events: none;
+  }
+
+  /* Sky stars handled by existing #stars layer behind, so just night bg */
+
+  /* Ground */
+  #house-ground {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 22%;
+    background: linear-gradient(180deg, #1e0a40, #130628);
+    border-top: 3px solid #3b1a6e;
+  }
+
+  /* Path to door */
+  #house-path {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 80px solid transparent;
+    border-right: 80px solid transparent;
+    border-bottom: 180px solid #2a1255;
+    z-index: 1;
+  }
+  #house-path::after {
+    content: '';
+    position: absolute;
+    bottom: -180px; left: -60px;
+    width: 120px; height: 180px;
+    background: #2a1255;
+  }
+
+  /* House SVG */
+  #house-svg {
+    position: absolute;
+    bottom: 18%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+  }
+
+  /* Knock prompt */
+  #knock-prompt {
+    position: absolute;
+    top: 12%;
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(1.2rem, 4vw, 2.2rem);
+    color: #FFD700;
+    text-shadow: 0 0 16px #FF6B9D, 0 0 32px #FF6B9D66;
+    text-align: center;
+    z-index: 10;
+    animation: floatTitle 3s ease-in-out infinite;
+    padding: 0 20px;
+  }
+
+  /* Knock dots */
+  #knock-dots {
+    position: absolute;
+    top: 22%;
+    display: flex; gap: 10px;
+    z-index: 10;
+  }
+  .knock-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,215,0,0.3);
+    transition: background 0.3s, border-color 0.3s, transform 0.2s;
+  }
+  .knock-dot.lit {
+    background: #FFD700;
+    border-color: #FFD700;
+    box-shadow: 0 0 8px #FFD700;
+    transform: scale(1.2);
+  }
+
+  /* Door shake animation */
+  @keyframes doorKnock {
+    0%   { transform: rotate(0deg); }
+    20%  { transform: rotate(-3deg); }
+    40%  { transform: rotate(3deg); }
+    60%  { transform: rotate(-2deg); }
+    80%  { transform: rotate(2deg); }
+    100% { transform: rotate(0deg); }
+  }
+  #door-group { transform-origin: 310px 370px; cursor: pointer; }
+  #door-group:hover { filter: brightness(1.1); }
+  #door-group.knocking { animation: doorKnock 0.35s ease; }
+
+  /* Door swing open */
+  @keyframes doorSwing {
+    0%   { transform: perspective(600px) rotateY(0deg); }
+    100% { transform: perspective(600px) rotateY(-75deg); }
+  }
+  #door-group.open {
+    transform-origin: 258px 240px;
+    animation: doorSwing 0.7s ease forwards;
+  }
+
+  /* Little stars around the door when knocked */
+  .door-spark {
+    position: absolute;
+    pointer-events: none;
+    font-size: 1.1rem;
+    animation: sparkFly 0.7s ease-out forwards;
+    z-index: 20;
+  }
+  @keyframes sparkFly {
+    0%   { opacity: 1; transform: translate(0,0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.3); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HOUSE SCREEN ── -->
+<div id="house-screen">
+  <p id="knock-prompt">Knock on the door…</p>
+  <div id="knock-dots">
+    <div class="knock-dot" id="dot-1"></div>
+    <div class="knock-dot" id="dot-2"></div>
+    <div class="knock-dot" id="dot-3"></div>
+    <div class="knock-dot" id="dot-4"></div>
+    <div class="knock-dot" id="dot-5"></div>
+  </div>
+
+  <svg id="house-svg" width="420" height="420" viewBox="0 0 420 420">
+    <!-- Moon -->
+    <circle cx="340" cy="55" r="34" fill="#fff9c4" opacity="0.9"/>
+    <circle cx="356" cy="44" r="28" fill="#1a0533"/>
+
+    <!-- More sky stars -->
+    <circle cx="60" cy="40" r="2" fill="#fff" opacity="0.8"/>
+    <circle cx="100" cy="20" r="1.5" fill="#fff" opacity="0.7"/>
+    <circle cx="150" cy="55" r="2" fill="#fff" opacity="0.6"/>
+    <circle cx="30" cy="80" r="1.5" fill="#fff" opacity="0.9"/>
+    <circle cx="380" cy="90" r="2" fill="#fff" opacity="0.7"/>
+    <circle cx="310" cy="30" r="1.5" fill="#fff" opacity="0.8"/>
+    <circle cx="45" cy="120" r="1.5" fill="#fff" opacity="0.6"/>
+    <circle cx="200" cy="18" r="2" fill="#fff" opacity="0.5"/>
+    <circle cx="255" cy="42" r="1.5" fill="#fff" opacity="0.7"/>
+    <circle cx="395" cy="140" r="1.5" fill="#fff" opacity="0.6"/>
+    <circle cx="15" cy="55" r="1" fill="#fff" opacity="0.8"/>
+    <circle cx="405" cy="50" r="1" fill="#fff" opacity="0.7"/>
+
+    <!-- String lights across rooftop -->
+    <path d="M30,205 Q60,195 90,205 Q120,195 150,205 Q180,195 210,200 Q240,195 270,205 Q300,195 330,205 Q360,195 390,205" fill="none" stroke="#4a2080" stroke-width="1.5"/>
+    <circle cx="55" cy="197" r="5" fill="#FFD700" opacity="0.95"/>
+    <circle cx="55" cy="197" r="8" fill="#FFD700" opacity="0.15"/>
+    <circle cx="95" cy="202" r="5" fill="#FF6B9D" opacity="0.95"/>
+    <circle cx="95" cy="202" r="8" fill="#FF6B9D" opacity="0.15"/>
+    <circle cx="135" cy="197" r="5" fill="#38bdf8" opacity="0.95"/>
+    <circle cx="135" cy="197" r="8" fill="#38bdf8" opacity="0.15"/>
+    <circle cx="175" cy="201" r="5" fill="#a855f7" opacity="0.95"/>
+    <circle cx="175" cy="201" r="8" fill="#a855f7" opacity="0.15"/>
+    <circle cx="215" cy="197" r="5" fill="#FFD700" opacity="0.95"/>
+    <circle cx="215" cy="197" r="8" fill="#FFD700" opacity="0.15"/>
+    <circle cx="255" cy="201" r="5" fill="#FF6B9D" opacity="0.95"/>
+    <circle cx="255" cy="201" r="8" fill="#FF6B9D" opacity="0.15"/>
+    <circle cx="295" cy="197" r="5" fill="#38bdf8" opacity="0.95"/>
+    <circle cx="295" cy="197" r="8" fill="#38bdf8" opacity="0.15"/>
+    <circle cx="335" cy="202" r="5" fill="#a855f7" opacity="0.95"/>
+    <circle cx="335" cy="202" r="8" fill="#a855f7" opacity="0.15"/>
+    <circle cx="370" cy="197" r="5" fill="#FFD700" opacity="0.95"/>
+    <circle cx="370" cy="197" r="8" fill="#FFD700" opacity="0.15"/>
+
+    <!-- House body -->
+    <rect x="60" y="200" width="300" height="220" rx="4" fill="#2a1060"/>
+    <rect x="60" y="200" width="300" height="220" rx="4" fill="none" stroke="#4a2080" stroke-width="2"/>
+
+    <!-- Roof -->
+    <polygon points="30,205 210,80 390,205" fill="#1a0845"/>
+    <polygon points="30,205 210,80 390,205" fill="none" stroke="#4a2080" stroke-width="2"/>
+    <!-- Roof ridge detail -->
+    <line x1="210" y1="80" x2="210" y2="200" stroke="#4a2080" stroke-width="1.5" stroke-dasharray="4,4"/>
+    <!-- Roof shingles hint -->
+    <path d="M90,195 Q110,185 130,195" fill="none" stroke="#4a2080" stroke-width="1" opacity="0.5"/>
+    <path d="M130,185 Q150,175 170,185" fill="none" stroke="#4a2080" stroke-width="1" opacity="0.5"/>
+    <path d="M250,185 Q270,175 290,185" fill="none" stroke="#4a2080" stroke-width="1" opacity="0.5"/>
+    <path d="M290,195 Q310,185 330,195" fill="none" stroke="#4a2080" stroke-width="1" opacity="0.5"/>
+
+    <!-- Chimney -->
+    <rect x="280" y="100" width="34" height="70" rx="2" fill="#1a0845" stroke="#4a2080" stroke-width="1.5"/>
+    <!-- Smoke puffs -->
+    <circle cx="297" cy="92" r="10" fill="#3b1a6e" opacity="0.5"/>
+    <circle cx="307" cy="78" r="8" fill="#3b1a6e" opacity="0.4"/>
+    <circle cx="295" cy="65" r="7" fill="#3b1a6e" opacity="0.3"/>
+
+    <!-- Left window -->
+    <rect x="85" y="240" width="70" height="60" rx="4" fill="#0d0122" stroke="#6d28d9" stroke-width="2"/>
+    <line x1="120" y1="240" x2="120" y2="300" stroke="#6d28d9" stroke-width="1.5"/>
+    <line x1="85" y1="270" x2="155" y2="270" stroke="#6d28d9" stroke-width="1.5"/>
+    <!-- Window warm glow -->
+    <rect x="85" y="240" width="70" height="60" rx="4" fill="#FFD700" opacity="0.1"/>
+    <!-- Curtains -->
+    <path d="M85,240 Q100,265 85,300" fill="#3b1a6e" opacity="0.7"/>
+    <path d="M155,240 Q140,265 155,300" fill="#3b1a6e" opacity="0.7"/>
+    <!-- Cat silhouette in left window -->
+    <ellipse cx="110" cy="290" rx="9" ry="8" fill="#1a0533"/>
+    <ellipse cx="110" cy="282" rx="7" ry="6" fill="#1a0533"/>
+    <polygon points="104,278 101,270 107,276" fill="#1a0533"/>
+    <polygon points="116,278 119,270 113,276" fill="#1a0533"/>
+    <circle cx="107" cy="282" r="1.5" fill="#FFD700" opacity="0.8"/>
+    <circle cx="113" cy="282" r="1.5" fill="#FFD700" opacity="0.8"/>
+
+    <!-- Right window -->
+    <rect x="265" y="240" width="70" height="60" rx="4" fill="#0d0122" stroke="#6d28d9" stroke-width="2"/>
+    <line x1="300" y1="240" x2="300" y2="300" stroke="#6d28d9" stroke-width="1.5"/>
+    <line x1="265" y1="270" x2="335" y2="270" stroke="#6d28d9" stroke-width="1.5"/>
+    <rect x="265" y="240" width="70" height="60" rx="4" fill="#FFD700" opacity="0.1"/>
+    <path d="M265,240 Q280,265 265,300" fill="#3b1a6e" opacity="0.7"/>
+    <path d="M335,240 Q320,265 335,300" fill="#3b1a6e" opacity="0.7"/>
+    <!-- Balloon shadow in right window -->
+    <circle cx="300" cy="268" r="10" fill="#FF6B9D" opacity="0.3"/>
+    <circle cx="300" cy="258" r="8" fill="#FF6B9D" opacity="0.2"/>
+
+    <!-- Door frame -->
+    <rect x="158" y="300" width="104" height="120" rx="6" fill="#1a0845" stroke="#7c3aed" stroke-width="2.5"/>
+    <!-- Door arch top -->
+    <path d="M158,310 Q210,270 262,310" fill="#1a0845" stroke="#7c3aed" stroke-width="2.5"/>
+
+    <!-- Door panel (clickable group) -->
+    <g id="door-group">
+      <!-- Door surface -->
+      <rect x="162" y="305" width="96" height="115" rx="4" fill="#3b1a6e"/>
+      <path d="M162,315 Q210,278 258,315" fill="#3b1a6e"/>
+      <!-- Door panels -->
+      <rect x="170" y="318" width="36" height="40" rx="3" fill="#2a1060" stroke="#6d28d9" stroke-width="1"/>
+      <rect x="214" y="318" width="36" height="40" rx="3" fill="#2a1060" stroke="#6d28d9" stroke-width="1"/>
+      <rect x="170" y="368" width="80" height="40" rx="3" fill="#2a1060" stroke="#6d28d9" stroke-width="1"/>
+      <!-- Door knob -->
+      <circle cx="248" cy="365" r="7" fill="#FFD700" stroke="#b45309" stroke-width="1.5"/>
+      <circle cx="248" cy="365" r="4" fill="#fbbf24"/>
+      <!-- Door knocker -->
+      <circle cx="210" cy="348" r="10" fill="none" stroke="#FFD700" stroke-width="2.5"/>
+      <circle cx="210" cy="348" r="3" fill="#FFD700"/>
+      <path d="M210,358 Q210,366 210,368" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+
+    <!-- Welcome mat -->
+    <rect x="170" y="415" width="80" height="18" rx="4" fill="#4a2080"/>
+    <text x="210" y="428" text-anchor="middle" font-size="9" fill="#c4a0e0" font-family="Quicksand,sans-serif">WELCOME</text>
+
+    <!-- Garden path stones -->
+    <ellipse cx="210" cy="435" rx="18" ry="6" fill="#3b1a6e" opacity="0.8"/>
+    <ellipse cx="195" cy="448" rx="14" ry="5" fill="#3b1a6e" opacity="0.6"/>
+    <ellipse cx="225" cy="448" rx="14" ry="5" fill="#3b1a6e" opacity="0.6"/>
+    <ellipse cx="210" cy="460" rx="18" ry="6" fill="#3b1a6e" opacity="0.5"/>
+
+    <!-- Left fence -->
+    <line x1="60" y1="390" x2="5" y2="390" stroke="#4a2080" stroke-width="2"/>
+    <line x1="5" y1="375" x2="5" y2="420" stroke="#4a2080" stroke-width="2.5"/>
+    <line x1="18" y1="372" x2="18" y2="420" stroke="#4a2080" stroke-width="2.5"/>
+    <line x1="31" y1="374" x2="31" y2="420" stroke="#4a2080" stroke-width="2.5"/>
+    <line x1="44" y1="372" x2="44" y2="420" stroke="#4a2080" stroke-width="2.5"/>
+    <polygon points="5,375 11,366 17,375" fill="#4a2080"/>
+    <polygon points="18,372 24,363 30,372" fill="#4a2080"/>
+    <polygon points="31,374 37,365 43,374" fill="#4a2080"/>
+    <polygon points="44,372 50,363 56,372" fill="#4a2080"/>
+
+    <!-- Right fence -->
+    <line x1="360" y1="390" x2="415" y2="390" stroke="#4a2080" stroke-width="2"/>
+    <line x1="366" y1="372" x2="366" y2="420" stroke="#4a2080" stroke-width="2.5"/>
+    <line x1="379" y1="374" x2="379" y2="420" stroke="#4a2080" stroke-width="2.5"/>
+    <line x1="392" y1="372" x2="392" y2="420" stroke="#4a2080" stroke-width="2.5"/>
+    <line x1="405" y1="375" x2="405" y2="420" stroke="#4a2080" stroke-width="2.5"/>
+    <polygon points="366,372 372,363 378,372" fill="#4a2080"/>
+    <polygon points="379,374 385,365 391,374" fill="#4a2080"/>
+    <polygon points="392,372 398,363 404,372" fill="#4a2080"/>
+    <polygon points="405,375 411,366 417,375" fill="#4a2080"/>
+
+    <!-- Flower pots -->
+    <rect x="82" y="400" width="26" height="18" rx="3" fill="#7c3aed"/>
+    <ellipse cx="95" cy="399" rx="16" ry="6" fill="#6d28d9"/>
+    <circle cx="95" cy="388" r="9" fill="#FF6B9D"/>
+    <circle cx="86" cy="382" r="7" fill="#fb923c"/>
+    <circle cx="104" cy="383" r="7" fill="#FF6B9D"/>
+    <circle cx="95" cy="378" r="5" fill="#FFD700"/>
+
+    <rect x="312" y="400" width="26" height="18" rx="3" fill="#7c3aed"/>
+    <ellipse cx="325" cy="399" rx="16" ry="6" fill="#6d28d9"/>
+    <circle cx="325" cy="388" r="9" fill="#a855f7"/>
+    <circle cx="316" cy="382" r="7" fill="#FF6B9D"/>
+    <circle cx="334" cy="383" r="7" fill="#fb923c"/>
+    <circle cx="325" cy="378" r="5" fill="#38bdf8"/>
+
+    <!-- Left bush -->
+    <circle cx="68" cy="415" r="16" fill="#1e0845"/>
+    <circle cx="55" cy="418" r="12" fill="#1e0845"/>
+    <circle cx="80" cy="420" r="14" fill="#1e0845"/>
+    <circle cx="68" cy="408" r="10" fill="#2a1060"/>
+    <circle cx="62" cy="413" r="5" fill="#FF6B9D" opacity="0.7"/>
+    <circle cx="74" cy="411" r="4" fill="#a855f7" opacity="0.7"/>
+    <circle cx="68" cy="420" r="4" fill="#FFD700" opacity="0.6"/>
+
+    <!-- Right bush -->
+    <circle cx="352" cy="415" r="16" fill="#1e0845"/>
+    <circle cx="365" cy="418" r="12" fill="#1e0845"/>
+    <circle cx="340" cy="420" r="14" fill="#1e0845"/>
+    <circle cx="352" cy="408" r="10" fill="#2a1060"/>
+    <circle cx="346" cy="413" r="5" fill="#fb923c" opacity="0.7"/>
+    <circle cx="358" cy="411" r="4" fill="#FF6B9D" opacity="0.7"/>
+    <circle cx="352" cy="420" r="4" fill="#38bdf8" opacity="0.6"/>
+
+    <!-- Lanterns hanging from roof edge -->
+    <line x1="141" y1="205" x2="141" y2="278" stroke="#4a2080" stroke-width="1"/>
+    <rect x="134" y="278" width="14" height="22" rx="3" fill="#FFD700" opacity="0.95"/>
+    <rect x="132" y="276" width="18" height="4" rx="1" fill="#b45309"/>
+    <rect x="132" y="300" width="18" height="4" rx="1" fill="#b45309"/>
+    <ellipse cx="141" cy="289" rx="5" ry="9" fill="#fff" opacity="0.35"/>
+    <circle cx="141" cy="289" r="14" fill="#FFD700" opacity="0.06"/>
+
+    <line x1="279" y1="205" x2="279" y2="278" stroke="#4a2080" stroke-width="1"/>
+    <rect x="272" y="278" width="14" height="22" rx="3" fill="#FF6B9D" opacity="0.95"/>
+    <rect x="270" y="276" width="18" height="4" rx="1" fill="#b45309"/>
+    <rect x="270" y="300" width="18" height="4" rx="1" fill="#b45309"/>
+    <ellipse cx="279" cy="289" rx="5" ry="9" fill="#fff" opacity="0.35"/>
+    <circle cx="279" cy="289" r="14" fill="#FF6B9D" opacity="0.06"/>
+
+    <!-- Small tree left -->
+    <rect x="20" y="360" width="8" height="50" rx="2" fill="#2a1060"/>
+    <circle cx="24" cy="345" r="20" fill="#1e0845"/>
+    <circle cx="14" cy="355" r="14" fill="#1e0845"/>
+    <circle cx="34" cy="355" r="14" fill="#1e0845"/>
+    <circle cx="24" cy="335" r="12" fill="#2a1060"/>
+
+    <!-- Small tree right -->
+    <rect x="392" y="360" width="8" height="50" rx="2" fill="#2a1060"/>
+    <circle cx="396" cy="345" r="20" fill="#1e0845"/>
+    <circle cx="386" cy="355" r="14" fill="#1e0845"/>
+    <circle cx="406" cy="355" r="14" fill="#1e0845"/>
+    <circle cx="396" cy="335" r="12" fill="#2a1060"/>
+  </svg>
+
+  <div id="house-ground"></div>
+</div>
+
+<div id="stars"></div>
+<canvas id="fireworks-canvas"></canvas>
+
+<div id="scene" style="display:none;">
+  <h1 id="title">Happy Birthday! 🎂</h1>
+
+  <div id="stage">
+    <!-- Cat -->
+    <div id="cat-wrap" style="position:relative;">
+      <div id="cat-bubble">Jiarui, we're waiting for you! 🐾</div>
+      <svg id="cat-svg" width="110" height="140" viewBox="0 0 110 140">
+        <!-- Body -->
+        <ellipse cx="55" cy="105" rx="32" ry="30" fill="#F4A261"/>
+        <!-- Head -->
+        <ellipse cx="55" cy="68" rx="26" ry="24" fill="#F4A261"/>
+        <!-- Ears -->
+        <polygon points="32,50 22,28 44,42" fill="#F4A261"/>
+        <polygon points="78,50 88,28 66,42" fill="#F4A261"/>
+        <polygon points="34,47 26,31 43,43" fill="#E76F51"/>
+        <polygon points="76,47 84,31 67,43" fill="#E76F51"/>
+        <!-- Face -->
+        <ellipse cx="45" cy="67" rx="7" ry="8" fill="#fff"/>
+        <ellipse cx="65" cy="67" rx="7" ry="8" fill="#fff"/>
+        <circle cx="45" cy="68" r="4.5" fill="#2d1b00" id="eye-l"/>
+        <circle cx="65" cy="68" r="4.5" fill="#2d1b00" id="eye-r"/>
+        <circle cx="46.5" cy="66.5" r="1.5" fill="#fff"/>
+        <circle cx="66.5" cy="66.5" r="1.5" fill="#fff"/>
+        <!-- Nose -->
+        <polygon points="55,74 51,77 59,77" fill="#E76F51"/>
+        <!-- Mouth -->
+        <path d="M51,77 Q55,82 59,77" fill="none" stroke="#2d1b00" stroke-width="1.2"/>
+        <!-- Whiskers -->
+        <line x1="59" y1="75" x2="82" y2="70" stroke="#a0522d" stroke-width="1"/>
+        <line x1="59" y1="77" x2="82" y2="78" stroke="#a0522d" stroke-width="1"/>
+        <line x1="51" y1="75" x2="28" y2="70" stroke="#a0522d" stroke-width="1"/>
+        <line x1="51" y1="77" x2="28" y2="78" stroke="#a0522d" stroke-width="1"/>
+        <!-- Tail -->
+        <path d="M85,115 Q115,90 105,65" fill="none" stroke="#F4A261" stroke-width="9" stroke-linecap="round"/>
+        <path d="M85,115 Q115,90 105,65" fill="none" stroke="#E76F51" stroke-width="3" stroke-linecap="round" stroke-dasharray="4,6"/>
+        <!-- Paws -->
+        <ellipse cx="40" cy="132" rx="11" ry="7" fill="#F4A261"/>
+        <ellipse cx="70" cy="132" rx="11" ry="7" fill="#F4A261"/>
+        <!-- Belly -->
+        <ellipse cx="55" cy="108" rx="18" ry="16" fill="#FDDCB5"/>
+        <!-- Stripes -->
+        <path d="M36,90 Q43,88 40,82" fill="none" stroke="#E76F51" stroke-width="2" stroke-linecap="round"/>
+        <path d="M74,90 Q67,88 70,82" fill="none" stroke="#E76F51" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <!-- Cake -->
+    <div id="cake-wrap">
+      <svg id="cake-svg" width="230" height="260" viewBox="0 0 230 260">
+        <!-- Candles -->
+        <g id="candles">
+          <!-- candle 1 -->
+          <rect x="60" y="32" width="12" height="34" rx="3" fill="#FF6B9D"/>
+          <ellipse class="flame" cx="66" cy="30" rx="5" ry="8" fill="#FFD700"/>
+          <ellipse class="flame" cx="66" cy="30" rx="3" ry="5" fill="#FFF"/>
+          <!-- candle 2 -->
+          <rect x="90" y="24" width="12" height="40" rx="3" fill="#a855f7"/>
+          <ellipse class="flame" cx="96" cy="22" rx="5" ry="8" fill="#FFD700"/>
+          <ellipse class="flame" cx="96" cy="22" rx="3" ry="5" fill="#FFF"/>
+          <!-- candle 3 -->
+          <rect x="120" y="28" width="12" height="36" rx="3" fill="#38bdf8"/>
+          <ellipse class="flame" cx="126" cy="26" rx="5" ry="8" fill="#FFD700"/>
+          <ellipse class="flame" cx="126" cy="26" rx="3" ry="5" fill="#FFF"/>
+          <!-- candle 4 -->
+          <rect x="150" y="22" width="12" height="42" rx="3" fill="#FF6B9D"/>
+          <ellipse class="flame" cx="156" cy="20" rx="5" ry="8" fill="#FFD700"/>
+          <ellipse class="flame" cx="156" cy="20" rx="3" ry="5" fill="#FFF"/>
+        </g>
+
+        <!-- Top tier -->
+        <ellipse cx="115" cy="72" rx="55" ry="14" fill="#FF9FC9"/>
+        <rect x="60" y="72" width="110" height="38" fill="#FFB5D8"/>
+        <ellipse cx="115" cy="110" rx="55" ry="14" fill="#FF9FC9"/>
+        <!-- Top tier deco dots -->
+        <circle cx="80" cy="88" r="4" fill="#fff" opacity="0.6"/>
+        <circle cx="100" cy="82" r="3" fill="#FFD700" opacity="0.8"/>
+        <circle cx="120" cy="90" r="4" fill="#fff" opacity="0.6"/>
+        <circle cx="140" cy="83" r="3" fill="#a855f7" opacity="0.8"/>
+        <circle cx="155" cy="91" r="4" fill="#fff" opacity="0.6"/>
+        <!-- Frosting drips top tier -->
+        <path d="M62,72 Q68,62 74,72 Q80,62 86,72 Q92,62 98,72 Q104,62 110,72 Q116,62 122,72 Q128,62 134,72 Q140,62 146,72 Q152,62 158,72 Q164,62 170,72" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+
+        <!-- Middle tier -->
+        <ellipse cx="115" cy="110" rx="70" ry="16" fill="#c084fc"/>
+        <rect x="45" y="110" width="140" height="48" fill="#d8b4fe"/>
+        <ellipse cx="115" cy="158" rx="70" ry="16" fill="#c084fc"/>
+        <!-- Middle tier deco -->
+        <circle cx="65" cy="130" r="5" fill="#fff" opacity="0.5"/>
+        <circle cx="90" cy="122" r="4" fill="#FF6B9D" opacity="0.9"/>
+        <circle cx="115" cy="133" r="5" fill="#fff" opacity="0.5"/>
+        <circle cx="140" cy="122" r="4" fill="#FFD700" opacity="0.9"/>
+        <circle cx="165" cy="133" r="5" fill="#fff" opacity="0.5"/>
+        <!-- Frosting drips middle -->
+        <path d="M47,110 Q54,98 61,110 Q68,98 75,110 Q82,98 89,110 Q96,98 103,110 Q110,98 117,110 Q124,98 131,110 Q138,98 145,110 Q152,98 159,110 Q166,98 173,110 Q180,98 183,110" fill="none" stroke="#f3e8ff" stroke-width="8" stroke-linecap="round"/>
+
+        <!-- Bottom tier -->
+        <ellipse cx="115" cy="158" rx="85" ry="18" fill="#fb923c"/>
+        <rect x="30" y="158" width="170" height="56" fill="#fdba74"/>
+        <ellipse cx="115" cy="214" rx="85" ry="18" fill="#fb923c"/>
+        <!-- Bottom deco dots -->
+        <circle cx="50" cy="183" r="6" fill="#fff" opacity="0.5"/>
+        <circle cx="80" cy="172" r="5" fill="#FF6B9D" opacity="0.9"/>
+        <circle cx="115" cy="186" r="6" fill="#fff" opacity="0.5"/>
+        <circle cx="150" cy="172" r="5" fill="#FFD700" opacity="0.9"/>
+        <circle cx="180" cy="186" r="6" fill="#fff" opacity="0.5"/>
+        <!-- Frosting drips bottom -->
+        <path d="M32,158 Q40,144 48,158 Q56,144 64,158 Q72,144 80,158 Q88,144 96,158 Q104,144 112,158 Q120,144 128,158 Q136,144 144,158 Q152,144 160,158 Q168,144 176,158 Q184,144 192,158 Q198,144 200,158" fill="none" stroke="#fed7aa" stroke-width="9" stroke-linecap="round"/>
+
+        <!-- Base plate -->
+        <ellipse cx="115" cy="216" rx="92" ry="14" fill="#7c3aed" opacity="0.6"/>
+
+        <!-- Cut overlay lines (added dynamically) -->
+        <g id="cut-lines"></g>
+      </svg>
+    </div>
+  </div>
+
+  <div id="wish-box" style="display:none;">
+    <button id="wish-btn">🕯️ Blow Out the Candles!</button>
+  </div>
+
+  <div id="status-text"></div>
+  <button id="cut-btn">🍰 Let's Cut the Cake!</button>
+</div>
+
+<!-- Slices display -->
+<div id="slices-container"></div>
+
+<!-- Girl character -->
+<div id="girl-wrap">
+  <div style="position:relative;">
+    <div id="girl-bubble-wrap" style="position:relative;">
+      <button id="envelope-btn">💌 请查收祝福</button>
+    </div>
+    <svg id="girl-walk-anim" width="120" height="200" viewBox="0 0 120 200">
+      <!-- Hair -->
+      <ellipse cx="60" cy="34" rx="26" ry="30" fill="#5D3A1A"/>
+      <ellipse cx="38" cy="52" rx="10" ry="22" fill="#5D3A1A"/>
+      <ellipse cx="82" cy="52" rx="10" ry="22" fill="#5D3A1A"/>
+      <!-- Face -->
+      <ellipse cx="60" cy="40" rx="20" ry="22" fill="#FDDCB5"/>
+      <!-- Eyes -->
+      <ellipse cx="52" cy="36" rx="4" ry="5" fill="#fff"/>
+      <ellipse cx="68" cy="36" rx="4" ry="5" fill="#fff"/>
+      <circle cx="53" cy="37" r="2.5" fill="#2d1b00"/>
+      <circle cx="69" cy="37" r="2.5" fill="#2d1b00"/>
+      <circle cx="54" cy="36" r="1" fill="#fff"/>
+      <circle cx="70" cy="36" r="1" fill="#fff"/>
+      <!-- Eyebrows -->
+      <path d="M48,31 Q52,28 56,31" fill="none" stroke="#5D3A1A" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M64,31 Q68,28 72,31" fill="none" stroke="#5D3A1A" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Blush -->
+      <ellipse cx="45" cy="44" rx="7" ry="4" fill="#FFB5B5" opacity="0.6"/>
+      <ellipse cx="75" cy="44" rx="7" ry="4" fill="#FFB5B5" opacity="0.6"/>
+      <!-- Smile -->
+      <path d="M52,48 Q60,55 68,48" fill="none" stroke="#E76F51" stroke-width="2" stroke-linecap="round"/>
+      <!-- Lips -->
+      <path d="M54,49 Q60,53 66,49" fill="#FF6B9D" stroke="none"/>
+      <!-- Neck -->
+      <rect x="54" y="60" width="12" height="14" rx="4" fill="#FDDCB5"/>
+      <!-- Dress body -->
+      <path d="M35,74 Q38,68 60,66 Q82,68 85,74 L90,155 Q75,162 60,163 Q45,162 30,155 Z" fill="#FF6B9D"/>
+      <!-- Dress collar -->
+      <path d="M48,66 Q60,78 72,66" fill="#FFB5D8"/>
+      <!-- Arms -->
+      <path d="M38,76 Q20,95 22,115" fill="none" stroke="#FDDCB5" stroke-width="12" stroke-linecap="round"/>
+      <path d="M82,76 Q100,95 98,115" fill="none" stroke="#FDDCB5" stroke-width="12" stroke-linecap="round"/>
+      <!-- Hands -->
+      <circle cx="22" cy="117" r="8" fill="#FDDCB5"/>
+      <circle cx="98" cy="117" r="8" fill="#FDDCB5"/>
+      <!-- Fork in right hand (eating state) -->
+      <g id="girl-fork" style="display:none">
+        <rect x="100" y="100" width="3" height="22" rx="1" fill="#ccc"/>
+        <rect x="98" y="100" width="2" height="8" rx="1" fill="#ccc"/>
+        <rect x="103" y="100" width="2" height="8" rx="1" fill="#ccc"/>
+      </g>
+      <!-- Legs -->
+      <rect x="45" y="152" width="14" height="42" rx="6" fill="#FF6B9D"/>
+      <rect x="61" y="152" width="14" height="42" rx="6" fill="#e55b90"/>
+      <!-- Shoes -->
+      <ellipse cx="52" cy="196" rx="12" ry="7" fill="#6d28d9"/>
+      <ellipse cx="68" cy="196" rx="12" ry="7" fill="#6d28d9"/>
+      <!-- Dress ruffles -->
+      <path d="M30,120 Q45,130 60,125 Q75,130 90,120" fill="none" stroke="#FFB5D8" stroke-width="3"/>
+      <path d="M32,135 Q45,145 60,140 Q75,145 88,135" fill="none" stroke="#FFB5D8" stroke-width="3"/>
+    </svg>
+  </div>
+</div>
+
+<script>
+// ──────────────────── STARS ────────────────────
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const sz = Math.random() * 2.5 + 0.5;
+  s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*2+1).toFixed(1)}s;animation-delay:${Math.random()*3}s`;
+  starsEl.appendChild(s);
+}
+
+// ──────────────────── KNOCK LOGIC ────────────────────
+let knockCount = 0;
+const MAX_KNOCKS = 5;
+const doorGroup = document.getElementById('door-group');
+const knockPrompt = document.getElementById('knock-prompt');
+
+doorGroup.addEventListener('click', handleKnock);
+doorGroup.addEventListener('touchstart', (e) => { e.preventDefault(); handleKnock(); });
+
+function handleKnock() {
+  if (knockCount >= MAX_KNOCKS) return;
+
+  // Shake door
+  doorGroup.classList.remove('knocking');
+  void doorGroup.offsetWidth;
+  doorGroup.classList.add('knocking');
+
+  // Light up dot
+  knockCount++;
+  document.getElementById('dot-' + knockCount).classList.add('lit');
+
+  // Sparks
+  spawnSparks();
+
+  // Update prompt
+  const left = MAX_KNOCKS - knockCount;
+  if (left > 0) {
+    knockPrompt.textContent = left === 1 ? 'One more…! 🌟' : `${left} more knocks…`;
+  }
+
+  // On final knock open door
+  if (knockCount >= MAX_KNOCKS) {
+    setTimeout(openDoor, 400);
+  }
+}
+
+function spawnSparks() {
+  const houseEl = document.getElementById('house-screen');
+  const doorRect = doorGroup.closest('svg').getBoundingClientRect();
+  const cx = doorRect.left + doorRect.width * 0.5;
+  const cy = doorRect.top + doorRect.height * 0.72;
+  const emojis = ['✨','⭐','💫','🌟'];
+  for (let i = 0; i < 5; i++) {
+    const sp = document.createElement('div');
+    sp.className = 'door-spark';
+    sp.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    const angle = (Math.random() * 180 - 90);
+    const dist = 40 + Math.random() * 50;
+    sp.style.left = cx + 'px';
+    sp.style.top = cy + 'px';
+    sp.style.setProperty('--tx', Math.round(Math.cos(angle * Math.PI/180) * dist) + 'px');
+    sp.style.setProperty('--ty', Math.round(Math.sin(angle * Math.PI/180) * dist - 30) + 'px');
+    houseEl.appendChild(sp);
+    setTimeout(() => sp.remove(), 700);
+  }
+}
+
+function openDoor() {
+  knockPrompt.textContent = "🎉 Welcome in!";
+  doorGroup.classList.remove('knocking');
+  doorGroup.classList.add('open');
+
+  setTimeout(() => {
+    const hs = document.getElementById('house-screen');
+    hs.classList.add('fade-away');
+    document.getElementById('scene').style.display = 'flex';
+    setTimeout(() => hs.style.display = 'none', 900);
+
+    // Confetti burst
+    setTimeout(() => spawnConfetti(), 100);
+
+    // Cat says first message
+    const catBubble = document.getElementById('cat-bubble');
+    setTimeout(() => {
+      catBubble.textContent = "Jiarui, we're waiting for you! 🐾";
+      catBubble.style.display = 'block';
+    }, 600);
+
+    // Cat changes message after 5s
+    setTimeout(() => {
+      catBubble.style.animation = 'none';
+      catBubble.textContent = "✨ Close your eyes and make a wish…";
+    }, 5600);
+
+    // Blow out button appears 10s after second message
+    setTimeout(() => {
+      const wb = document.getElementById('wish-box');
+      wb.style.display = 'block';
+      wb.style.animation = 'fadeIn 0.7s ease';
+    }, 15600);
+
+  }, 700);
+}
+
+function spawnConfetti() {
+  const colors = ['#FF6B9D','#FFD700','#a855f7','#38bdf8','#fb923c','#34d399','#f472b6','#fff'];
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    el.style.background = color;
+    el.style.left = (20 + Math.random() * 60) + 'vw';
+    el.style.top = '20vh';
+    el.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
+    el.style.setProperty('--ty', (120 + Math.random() * 300) + 'px');
+    el.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+    el.style.setProperty('--dur', (0.8 + Math.random() * 1.2) + 's');
+    el.style.setProperty('--r', Math.random() > 0.5 ? '50%' : '2px');
+    el.style.animationDelay = (Math.random() * 0.4) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2500);
+  }
+}
+
+
+// ──────────────────── STATE ────────────────────
+let phase = 'wish'; // wish → fireworks → cutting → eating
+let cutCount = 0;
+const MAX_CUTS = 5;
+const cakeWrap = document.getElementById('cake-wrap');
+const catWrap = document.getElementById('cat-wrap');
+const statusText = document.getElementById('status-text');
+const cutBtn = document.getElementById('cut-btn');
+const slicesContainer = document.getElementById('slices-container');
+const girlWrap = document.getElementById('girl-wrap');
+const girlFork = document.getElementById('girl-fork');
+const wishBox = document.getElementById('wish-box');
+
+// ──────────────────── WISH ────────────────────
+document.getElementById('wish-btn').addEventListener('click', () => {
+  document.getElementById('cat-bubble').style.display = 'none';
+  wishBox.classList.add('fade-out');
+  setTimeout(() => {
+    wishBox.classList.add('hidden');
+    blowCandles();
+  }, 500);
+});
+
+function blowCandles() {
+  const candles = document.getElementById('candles');
+  // fade out candles
+  candles.style.transition = 'opacity 0.8s';
+  candles.style.opacity = '0';
+  setTimeout(() => {
+    candles.style.display = 'none';
+    statusText.textContent = '🎉 Yay! Your wish is sent to the stars!';
+    startFireworks();
+    playHappyBirthday();
+    catWrap.classList.add('bouncing');
+    setTimeout(() => {
+      statusText.textContent = '🎊 Time to celebrate!';
+      cutBtn.style.display = 'block';
+    }, 2800);
+  }, 900);
+}
+
+// ──────────────────── FIREWORKS ────────────────
+const fwCanvas = document.getElementById('fireworks-canvas');
+const ctx = fwCanvas.getContext('2d');
+let fwActive = false;
+let particles = [];
+let fwTimer = null;
+
+function resizeCanvas() {
+  fwCanvas.width = window.innerWidth;
+  fwCanvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function launchFirework() {
+  const x = Math.random() * fwCanvas.width;
+  const y = Math.random() * fwCanvas.height * 0.55 + 40;
+  const hue = Math.random() * 360;
+  const count = 60 + Math.floor(Math.random() * 40);
+  for (let i = 0; i < count; i++) {
+    const angle = (i / count) * Math.PI * 2;
+    const speed = Math.random() * 5 + 2;
+    particles.push({
+      x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+      life: 1, decay: Math.random() * 0.015 + 0.01,
+      size: Math.random() * 3 + 1.5,
+      color: `hsl(${hue + Math.random()*40-20},100%,70%)`
+    });
+  }
+}
+
+function animFireworks() {
+  if (!fwActive) return;
+  ctx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+  particles = particles.filter(p => p.life > 0);
+  for (const p of particles) {
+    p.x += p.vx; p.y += p.vy + 0.06;
+    p.vx *= 0.97; p.vy *= 0.97;
+    p.life -= p.decay;
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle = p.color;
+    ctx.shadowColor = p.color;
+    ctx.shadowBlur = 4;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+  requestAnimationFrame(animFireworks);
+}
+
+function startFireworks() {
+  fwActive = true;
+  animFireworks();
+  fwTimer = setInterval(launchFirework, 400);
+}
+
+function stopFireworks() {
+  fwActive = false;
+  clearInterval(fwTimer);
+  setTimeout(() => ctx.clearRect(0, 0, fwCanvas.width, fwCanvas.height), 1000);
+}
+
+// ──────────────────── HAPPY BIRTHDAY SONG ────────────────────
+let audioCtx = null;
+function playHappyBirthday() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const master = audioCtx.createGain();
+  master.gain.value = 0.18;
+  master.connect(audioCtx.destination);
+
+  // Notes: Happy Birthday melody (freq, beat duration in quarter-notes)
+  const C4=261.63,D4=293.66,E4=329.63,F4=349.23,G4=392,A4=440,B4=493.88,
+        C5=523.25,D5=587.33,E5=659.25,F5=698.46,G5=783.99,A5=880;
+  const tempo = 0.38; // seconds per beat
+  // [freq, beats] — 0 = rest
+  const melody = [
+    [C4,0.75],[C4,0.25],[D4,1],[C4,1],[F4,1],[E4,2],
+    [C4,0.75],[C4,0.25],[D4,1],[C4,1],[G4,1],[F4,2],
+    [C4,0.75],[C4,0.25],[C5,1],[A4,1],[F4,1],[E4,1],[D4,1],
+    [A4,0.75],[A4,0.25],[G4,1],[F4,1],[G4,1],[F4,3]
+  ];
+
+  let t = audioCtx.currentTime + 0.1;
+  melody.forEach(([freq, beats]) => {
+    if (freq > 0) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(1, t + 0.04);
+      gain.gain.setValueAtTime(1, t + beats * tempo - 0.05);
+      gain.gain.linearRampToValueAtTime(0, t + beats * tempo);
+      osc.connect(gain);
+      gain.connect(master);
+      osc.start(t);
+      osc.stop(t + beats * tempo);
+    }
+    t += beats * tempo;
+  });
+
+  // Loop after song ends
+  const totalDuration = melody.reduce((s,[,b]) => s + b, 0) * tempo + 1.5;
+  setTimeout(() => { if (audioCtx) playHappyBirthday(); }, totalDuration * 1000);
+}
+
+// ──────────────────── CUT BTN ────────────────────
+cutBtn.addEventListener('click', () => {
+  cutBtn.style.display = 'none';
+  catWrap.classList.remove('bouncing');
+  stopFireworks();
+  phase = 'cutting';
+  statusText.textContent = "🔪 Let's cut the cake! Click on it!";
+  cakeWrap.classList.add('cutting');
+});
+const cakeScales = [1, 0.88, 0.76, 0.64, 0.50, 0.34];
+
+function animateCakeShrink(fromScale, toScale, duration, onDone) {
+  const svg = document.getElementById('cake-svg');
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    const s = fromScale + (toScale - fromScale) * ease;
+    svg.style.transform = `scale(${s})`;
+    svg.style.transformOrigin = 'bottom center';
+    if (t < 1) requestAnimationFrame(step);
+    else if (onDone) onDone();
+  }
+  requestAnimationFrame(step);
+}
+
+cakeWrap.addEventListener('click', (e) => {
+  if (phase !== 'cutting') return;
+
+  const prevScale = cakeScales[cutCount];
+  cutCount++;
+  const nextScale = cakeScales[cutCount];
+
+  // Animate cake shrinking
+  animateCakeShrink(prevScale, nextScale, 500);
+  popSlice(cutCount);
+
+  if (cutCount >= MAX_CUTS) {
+    phase = 'eating';
+    cakeWrap.classList.remove('cutting');
+    statusText.textContent = '🥳 Look who showed up to eat with you!';
+    setTimeout(bringGirl, 900);
+  } else {
+    statusText.textContent = `🍰 Great cut! ${MAX_CUTS - cutCount} more to go…`;
+  }
+});
+
+function popSlice(n) {
+  const colors = ['#FF6B9D','#a855f7','#fb923c','#38bdf8','#FFD700'];
+  const wrap = document.createElement('div');
+  wrap.className = 'slice-pop';
+  wrap.style.animationDelay = '0.05s';
+
+  // Mini SVG cake slice
+  const svg = `<svg width="70" height="80" viewBox="0 0 70 80">
+    <path d="M35,8 L5,72 Q35,82 65,72 Z" fill="${colors[(n-1)%colors.length]}" stroke="white" stroke-width="2"/>
+    <path d="M35,8 L5,72 Q35,65 65,72 Z" fill="${colors[(n)%colors.length]}" opacity="0.8"/>
+    <text x="35" y="55" text-anchor="middle" font-size="18">🎂</text>
+    <text x="35" y="72" text-anchor="middle" font-size="11" fill="white" font-family="Quicksand,sans-serif" font-weight="700">Slice #${n}</text>
+  </svg>`;
+  wrap.innerHTML = svg;
+  slicesContainer.appendChild(wrap);
+  // trigger reflow for animation
+  void wrap.offsetWidth;
+  wrap.style.animationPlayState = 'running';
+}
+
+// ──────────────────── GIRL ────────────────────
+function bringGirl() {
+  girlWrap.classList.add('enter');
+  setTimeout(() => {
+    girlFork.style.display = 'block';
+    girlWrap.classList.add('eating');
+    showBubble();
+    statusText.textContent = '🎈 Happy Birthday, Jiarui! 🎈';
+    startFireworks();
+    setTimeout(stopFireworks, 5000);
+  }, 2200);
+}
+
+function showBubble() {
+  document.getElementById('envelope-btn').style.display = 'block';
+}
+
+// ──────────────────── LETTER MODAL ────────────────────
+document.getElementById('envelope-btn').addEventListener('click', () => {
+  document.getElementById('letter-overlay').classList.add('open');
+  document.getElementById('envelope-btn').style.display = 'none';
+
+  let secs = 15;
+  const countdown = document.getElementById('letter-countdown');
+  countdown.style.display = 'block';
+  countdown.textContent = `✨ Reloading the celebration in ${secs}s…`;
+
+  const letterTimer = setInterval(() => {
+    secs--;
+    if (secs > 0) {
+      countdown.textContent = `✨ Reloading the celebration in ${secs}s…`;
+    } else {
+      clearInterval(letterTimer);
+      const overlay = document.getElementById('letter-overlay');
+      overlay.style.transition = 'opacity 1s';
+      overlay.style.opacity = '0';
+      setTimeout(() => location.reload(), 1000);
+    }
+  }, 1000);
+});
+
+
+// ──────────────────── CAT EYE FOLLOW ────────────────────
+document.addEventListener('mousemove', (e) => {
+  const catRect = document.getElementById('cat-svg').getBoundingClientRect();
+  const cx = catRect.left + catRect.width / 2;
+  const cy = catRect.top + catRect.height * 0.48;
+  const dx = e.clientX - cx; const dy = e.clientY - cy;
+  const dist = Math.sqrt(dx*dx+dy*dy);
+  const mx = dist > 0 ? (dx/dist)*2 : 0;
+  const my = dist > 0 ? (dy/dist)*2 : 0;
+  const el = document.getElementById('eye-l');
+  const er = document.getElementById('eye-r');
+  if(el){
+    el.setAttribute('cx', 45 + mx); el.setAttribute('cy', 68 + my);
+    er.setAttribute('cx', 65 + mx); er.setAttribute('cy', 68 + my);
+  }
+});
+</script>
+<!-- Letter Modal -->
+<div id="letter-overlay">
+  <div id="letter-card">
+    <div id="letter-body">虾虾生日快乐
+祝福长大一岁的你
+继续在名为人生的游乐园里
+自由舞蹈，玩得尽兴！！
+愿岁并谢，与友长兮 ❤️</div>
+    <div id="letter-sig">爱你的皮
+2026.04.02</div>
+    <div id="letter-countdown"></div>
+  </div>
+</div>
+
+</body>
+</html>
